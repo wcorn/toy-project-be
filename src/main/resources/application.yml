@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: terraform
+  datasource:
+    url: jdbc:mysql://${MYSQL_URL}:3306/test?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    open-in-view: false
+    generate-ddl: true
