@@ -1,0 +1,27 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      java: corretto21
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 794038223418.dkr.ecr.ap-northeast-2.amazonaws.com
+      - REPOSITORY_URI=794038223418.dkr.ecr.ap-northeast-2.amazonaws.com/backend-springboot
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
+  build:
+    commands:
+      - chmod +x ./gradlew
+      - ./gradlew clean build
+      - docker build -t $REPOSITORY_URI:latest .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+  post_build:
+    commands:
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+cache:
+  paths:
+    - '/root/.gradle/**/*'
+artifacts:
+  files:
+    - target/*.jar
