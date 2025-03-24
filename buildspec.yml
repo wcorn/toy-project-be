@@ -13,12 +13,22 @@ phases:
     commands:
       - chmod +x ./gradlew
       - ./gradlew clean build
-      - docker build -t $REPOSITORY_URI:latest .
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+      - docker build -t $REPOSITORY_URI:$IMAGE_TAG .
+      - docker tag $REPOSITORY_URI:$IMAGE_TAG $REPOSITORY_URI:latest
   post_build:
     commands:
-      - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
-cache:
-  paths:
-    - '/root/.gradle/**/*'
+      - docker push $REPOSITORY_URI:latest
+      # deploy.sh 생성 (이미지 버전 포함)
+      - echo "#!/bin/bash" > deploy.sh
+      - echo "set -e" >> deploy.sh
+      - echo "aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 794038223418.dkr.ecr.ap-northeast-2.amazonaws.com" >> deploy.sh
+      - echo "docker pull $REPOSITORY_URI:$IMAGE_TAG" >> deploy.sh
+      - echo "docker stop server || true" >> deploy.sh
+      - echo "docker rm server || true" >> deploy.sh
+      - echo "docker run -d -p 8080:8080 --name server --restart always $REPOSITORY_URI:$IMAGE_TAG" >> deploy.sh
+      - chmod +x deploy.sh
+artifacts:
+  files:
+    - deploy.sh
+    - appspec.yml
