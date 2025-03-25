@@ -26,7 +26,7 @@ phases:
       - echo "docker pull $REPOSITORY_URI:$IMAGE_TAG" >> deploy.sh
       - echo "docker stop server || true" >> deploy.sh
       - echo "docker rm server || true" >> deploy.sh
-      - echo "docker run -d -p 8080:8080 --name server --restart always e JAVA_OPTS1=-DMYSQL_URL=$MYSQL_URL -e JAVA_OPTS2=-DMYSQL_USERNAME=$MYSQL_USERNAME -e JAVA_OPTS3=-DMYSQL_PASSWORD=$MYSQL_PASSWORD $REPOSITORY_URI:$IMAGE_TAG" >> deploy.sh
+      - echo "docker run -d -p 8080:8080 --name server --restart always -e JAVA_OPTS1=-DMYSQL_URL=$MYSQL_URL -e JAVA_OPTS2=-DMYSQL_USERNAME=$MYSQL_USERNAME -e JAVA_OPTS3=-DMYSQL_PASSWORD=$MYSQL_PASSWORD $REPOSITORY_URI:$IMAGE_TAG" >> deploy.sh
       - chmod +x deploy.sh
 artifacts:
   files:
